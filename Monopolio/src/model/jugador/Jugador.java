@@ -33,7 +33,7 @@ public class Jugador{
         }
     }
     public void eliminarUbicacion(Ubicacion ubicacion){
-        if(ubicacionDueno/contains(ubicacion)){
+        if(ubicacionDueno.contains(ubicacion)){
             this.ubicacionDueno.remove(ubicacion);
         }
     }

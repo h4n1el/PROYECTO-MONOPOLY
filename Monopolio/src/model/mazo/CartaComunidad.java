@@ -31,9 +31,11 @@ public class CartaComunidad{
         ArrayList<Cartas> baraja = new ArrayList<Cartas>();
         
         Random generador = new Random();
-        for(int i = 0; i < this.mazo.size()){
+        int tamano = mazoCopia.size();
+        
+        for(int i = 0; i < tamano; i++){
             int j = nextInt(mazoCopia.size());
-            barajaMazo.add((Cartas)mazoCopia.get(j));
+            barajaMazo.add(mazoCopia.get(j));
             mazoCopia.remove(j);
             
         }

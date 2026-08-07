@@ -29,6 +29,7 @@ public class CartaComunidad{
     private ArrayList<Cartas> getBarajaMazos(){
         ArrayList mazoCopia = (ArrayList)this.mazo.clone();// clone duplica la estructura de la baraja actual
         ArrayList<Cartas> baraja = new ArrayList<Cartas>();
+        
         Random generador = new Random();
         for(int i = 0; i < this.mazo.size()){
             int j = nextInt(mazoCopia.size());

@@ -1,6 +1,11 @@
-import model.jugador.Jugador;
+package Monopolio.model.tablero;
 
-public class UbicacionPropiedad extends Ubicacion{
+import Monopolio.model.jugador.Jugador;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ObjectProperty;
+
+public class UbicacionPropiedad extends Ubicacion {
     private final int precio;
     private final int valorHipoteca;
     private final int precioCasa;
@@ -10,7 +15,7 @@ public class UbicacionPropiedad extends Ubicacion{
     private final int RentaCasa3;
     private final int RentaCasa4;
     private final int RentaHotel;
-    private final SimpleIntegerProperty casas;// SimpleIntegerProperty te permite guardar un numero entero y que otras partes del codigo lo sepan cada vez que cambia
+    private final SimpleIntegerProperty casas; //notifica cambios
     private int numeroCasas;
     private boolean mejorasHotel;
     private boolean esHotel;
@@ -20,7 +25,7 @@ public class UbicacionPropiedad extends Ubicacion{
     private boolean color;
     private final SimpleObjectProperty<Jugador> dueno;
 
-    public UbicacionPropiedad(String nombre, int precio, int[] renta, int precioCasa){
+    public UbicacionPropiedad(String nombre, int precio, int[] renta, int precioCasa) {
         super(nombre);
         this.precio = precio;
         this.valorHipoteca = precio / 2;
@@ -30,136 +35,136 @@ public class UbicacionPropiedad extends Ubicacion{
         this.RentaCasa3 = renta[3];
         this.RentaCasa4 = renta[4];
         this.RentaHotel = renta[5];
-        this.casas = new SimpleObjectProperty(this, "casa", 0);
+        this.casas = new SimpleIntegerProperty(this, "casa", 0);
         this.mejorasHotel = false;
         this.esHotel = false;
         this.esMejorable = false;
         this.esDueno = false;
         this.esHipotecado = false;
         this.color = false;
-        this.dueno = new SimpleObjectProperty();
+        this.dueno = new SimpleObjectProperty<>();
         this.precioCasa = precioCasa;
     }
 
-    public int getPrecio(){
+    public int getPrecio() {
         return this.precio;
     }
 
-    public int getValorHipoteca(){
+    public int getValorHipoteca() {
         return this.valorHipoteca;
     }
 
-    public void setHipotecado(boolean hipotecado){
-        if(this.numeroCasas == 0){
+    public void setHipotecado(boolean hipotecado) {
+        if (this.casas.get() == 0) {
             this.esHipotecado = hipotecado;
-            if(this.esHipotecado){
+            if (this.esHipotecado) {
                 this.esMejorable = false;
             }
         }
     }
 
-    public boolean getEstadoHipoteca(){
+    public boolean getEstadoHipoteca() {
         return this.esHipotecado;
     }
 
-    public int getRenta(){
-        int i = 0;
-        int cantidadCasas = this.casas.getValue();
+    public int getRenta() {
+        int i;
+        int cantidadCasas = this.casas.get();
 
-        if(cantidadCasas == 0 && !this.color){
-            i = this.rentaBase;
-        } else if(cantidadCasas == 0 && this.color && !this.esHotel){
-            i = this.rentaBase * 2;
-        } else if(cantidadCasas == 1){
-            i = RentaCasa1;
-        } else if(cantidadCasas == 2){
-            i = RentaCasa2;
-        } else if(cantidadCasas == 3){
-            i = RentaCasa3;
-        } else if(cantidadCasas == 4){
-            i = RentaCasa4
-        } else if(this.esHotel){
+        if (this.esHotel) {
             i = this.RentaHotel;
+        } else if (cantidadCasas == 0 && !this.color) {
+            i = this.rentaBase;
+        } else if (cantidadCasas == 0 && this.color) {
+            i = this.rentaBase * 2;
+        } else if (cantidadCasas == 1) {
+            i = this.RentaCasa1;
+        } else if (cantidadCasas == 2) {
+            i = this.RentaCasa2;
+        } else if (cantidadCasas == 3) {
+            i = this.RentaCasa3;
+        } else {
+            i = this.RentaCasa4;
         }
         return i;
     }
-    
-    public void construirHotel(){
-        int cantidadCasas = this.casas.getValue();
 
-        if(cantidadCasas < 4 && this.esMejorable){
+    public void construirHotel() {
+        int cantidadCasas = this.casas.get();
+
+        if (cantidadCasas < 4 && this.esMejorable) {
             this.casas.set(cantidadCasas + 1);
-        } else if(cantidadCasas == 4 && this.mejorasHotel){
-            this.mejorasHotel();
+            if (this.casas.get() == 4) {
+                this.mejorasHotel = true;
+            }
+        } else if (cantidadCasas == 4 && this.mejorasHotel) {
+            this.mejorarAHotel();
         }
     }
 
-    public void venderHotel(){
-        int cantidadCasas = this.casas.getValue();
-        boolean mejorable = this.esMejorable.getValue();
-        boolean hotel = this.esHotel.getValue();
+    public void venderHotel() {
+        int cantidadCasas = this.casas.get();
 
-        if(cantidadCasas == 0 && mejorable){
-            this.desmejorarHotel();
-        } else if(cantidadCasas > 0){
-            this.esHotel.setValue(hotel - 1);
+        if (cantidadCasas == 0 && this.esMejorable) {
+            this.desmejorar();
+        } else if (cantidadCasas > 0) {
+            this.casas.set(cantidadCasas - 1);
         }
     }
-    public int getNumeroCasas(){
-        return this.numeroCasas.get();
+
+    public int getNumeroCasas() {
+        return this.casas.get();
     }
 
-    public SimpleIntegerProperty getCasaProperty(){
+    public SimpleIntegerProperty getCasaProperty() {
         return this.casas;
     }
 
-    public boolean getEsHotel(){
+    public boolean getEsHotel() {
         return this.esHotel;
     }
 
-    public boolean getMejorasHotel(){
+    public boolean getMejorasHotel() {
         return this.mejorasHotel;
     }
 
-    public vois setMejorasHotel(boolean mejora){
-        boolean cantidadCasas = this.casas.get();
-        boolean mj = this.mejorasHotel;
+    public void setMejorasHotel(boolean mejora) {
+        int cantidadCasas = this.casas.get();
 
-        if(cantidadCasas == 4 && mejora){
-            mj = mejora;
-            
-        } else if(!mejora){
-          mj = mejora;  
+        if (cantidadCasas == 4 && mejora) {
+            this.mejorasHotel = true;
+        } else if (!mejora) {
+            this.mejorasHotel = false;
         }
     }
 
-    private void mejorasDeHotel(){
+    private void mejorarAHotel() {
         int cantidadCasas = this.casas.get();
-        if(this.mejorasHotel && cantidadCasas == 4){
-            this.esHotel(true);// actualiza la propiedad
-            this.casas.set(0); // reinicia las casas a 0
-            this.mejorasHotel = false;// evita que siga mejorando
+        if (this.mejorasHotel && cantidadCasas == 4) {
+            this.esHotel = true;      
+            this.casas.set(0);        
+            this.mejorasHotel = false; 
         }
-        }
+    }
 
-    private void desmejorar(){
-        if(this.esHotel){
+    private void desmejorar() {
+        if (this.esHotel) {
             this.esHotel = false;
             this.casas.set(4);
         }
     }
 
-    private void pasarPropiedad(Jugador jugador){
+    private void pasarPropiedad(Jugador jugador) {
         this.dueno.set(jugador);
-        
-        if(jugador == null){
+
+        if (jugador == null) {
             this.casas.set(0);
-            this.esHotel.set(false);
-            this.esHipotecado.set(false);
+            this.esHotel = false;
+            this.esHipotecado = false;
         }
     }
 
-    public void quitarPropiedad(){
+    public void quitarPropiedad() {
         int cantidadCasas = this.casas.get();
         this.dueno.set(null);
         this.esDueno = false;
@@ -167,60 +172,79 @@ public class UbicacionPropiedad extends Ubicacion{
         this.esHotel = false;
         this.esHipotecado = false;
         this.color = false;
-        if(cantidadCasas != 0){
+        if (cantidadCasas != 0) {
             this.casas.set(0);
         }
     }
 
-    public Jugador getDueno(){
+    public Jugador getDueno() {
         return this.dueno.get();
     }
 
-    public ObjectProperty<Jugador> getDuenoProperty(){
+    public ObjectProperty<Jugador> getDuenoProperty() {
         return this.dueno;
     }
 
-    public boolean getColorEstado(){
+    public boolean getColorEstado() {
         return this.color;
     }
-    public void setColorEstado(boolean estado){
+
+    public void setColorEstado(boolean estado) {
         this.color = estado;
-        if(!this.color){
+        if (!this.color) {
             this.esMejorable = false;
         }
     }
 
-    public boolean getESMenjorableEstado(){
+    public boolean getESMejorableEstado() {
         return this.esMejorable;
     }
 
-    public void setEsMejorableEstado(boolean estado){
+    public void setEsMejorableEstado(boolean estado) {
         this.esMejorable = estado;
     }
 
-    public int getPrecioCasa(){
+    public int getPrecioCasa() {
         return this.precioCasa;
     }
 
-    public boolean getEsDueno(){
+    public boolean getEsDueno() {
         return this.esDueno;
     }
 
-    public String getUsuarioDueno(){
-        return this.getNombre() + "\n\nPrecio = \u00a3 " + this.precio + "\nvalor de hipoteca: \u00a3" + this.valorHipoteca + "\nPrecio de la casa: \u00a3" + this.precioCasa + "\n\n Renta base: \u00a3" + this.rentaBase + "\n alquiler de la casa 1: \u00a3" + this.RentaCasa1 + "\n alquiler de la casa 1: \u00a3" + this.RentaCasa2 + "\n alquiler de la casa 2: \u00a3" + this.RentaCasa3 + "\n alquiler de la casa 3: \u00a3" + this.RentaCasa4 + "\n alquiler de la casa 4: \u00a3" + this.RentaCasa4 + "\n alquiler de hotel: \u00a3" + this.RentaHotel + "\n"; 
+    public void quitarCasa() {
+        if (this.casas.get() == 0 && this.esHotel) {
+            this.desmejorar();
+        } else if (this.casas.get() > 0) {
+            this.casas.set(this.casas.get() - 1);
+        }
     }
 
-    public int getValor(){
+    public String getUsuarioDueno() {
+        return this.getNombre()
+                + "\n\nPrecio = \u00a3 " + this.precio
+                + "\nvalor de hipoteca: \u00a3" + this.valorHipoteca
+                + "\nPrecio de la casa: \u00a3" + this.precioCasa
+                + "\n\n Renta base: \u00a3" + this.rentaBase
+                + "\n alquiler de la casa 1: \u00a3" + this.RentaCasa1
+                + "\n alquiler de la casa 2: \u00a3" + this.RentaCasa2
+                + "\n alquiler de la casa 3: \u00a3" + this.RentaCasa3
+                + "\n alquiler de la casa 4: \u00a3" + this.RentaCasa4
+                + "\n alquiler de hotel: \u00a3" + this.RentaHotel + "\n";
+    }
+
+    public int getValor() {
         int valor = this.precio;
-        if(esHotel){
+        if (this.esHotel) {
             valor += 5 * this.precioCasa;
         } else {
-            valor += numeroCasas * precioCasa;
+            valor += this.casas.get() * this.precioCasa;
         }
 
-        if(esHipotecado){
-            valor /= 2
+        if (this.esHipotecado) {
+            valor /= 2;
         }
 
         return valor;
     }
+}

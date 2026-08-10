@@ -1,23 +1,16 @@
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.ManejoEstado;
 
-public class Main extends Application
-{
-  public void start(Stage primerEstado) throws Exception
-  {
-    FXMLLoader load = new FXMLLoader(getClass().getResource("/view/Principal.fxml"));
 
-    primerEstado.setTitle("Registro Bancario");
-    primerEstado.setScene(new Scene(load.load()));
-    primerEstado.setWidth(900);
-    primerEstado.setHeight(800);
-    primerEstado.show();
-  }
+public class Main extends Application {
 
-    
-     public static void main(String[] args) {
+    @Override
+    public void start(Stage estadoPrincipal) {
+        new ManejoEstado(estadoPrincipal);
+    }
+
+    public static void main(String[] args) {
         launch(args);
     }
 }
